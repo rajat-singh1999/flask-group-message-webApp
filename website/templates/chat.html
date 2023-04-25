@@ -1,0 +1,89 @@
+{% extends "index.html" %}
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <div class="navbar-nav">
+            {% if user.is_authenticated %}
+            <p class="d-none">{ c = "/chat/"+code }</p>
+            <a class="nav-item nav-link" id="home" href="/">Home</a>
+            <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+            <a class="nav-item nav-link" id="logout" href="{{ c }}">Refresh</a>
+            {% else %}
+            <a class="nav-item nav-link" id="login" href="/login">Login</a>
+            <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign-Up</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class = 'alert-danger alert-dismissable fade show' role="'alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% else %}
+        <div class = 'alert-success alert-dismissable fade show' role="'alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
+<br />
+<br />
+
+
+<div class="container">
+    <h2>{{ name }}</h2>
+</div>
+<br />
+<div class="container" action="{{ c }}">
+    <form method="POST">
+        <textarea name="message" id="message" class="form-control"></textarea>
+        <br />
+        <div align="center">
+        <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+    </form>
+</div>
+
+  <div class="container">
+    <ul class="list-group list-group-flush" id="notes">
+    {% for m in messages %}
+    <li class="list-group-item">
+        <div class="container">
+            {% if user.id == m.user_id %}
+            <div class="container">{{ 'Me: ' + m.data }}</div>
+            {% else %}
+            <div class="container">{{ m.name + ': ' + m.data }}</div>
+            {% endif %}
+            <div class="container">{{ m.date }}</div>
+            <button type="button" class="close" onClick="deleteNote('{{ m.id }}', '{{ code }}')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </li>
+    <br />
+    {% endfor %}
+    </ul>
+</div>
+
+
+{% endblock %}
